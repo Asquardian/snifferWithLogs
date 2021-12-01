@@ -18,22 +18,22 @@ socketInf.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)#TO RECIVE ALL
 def sniffing(threadNum, f): ##THREAD NUMBER AND FILE IN ARGUMENT
     n = 0
     for n in range(100):
-        data=socketInf.recvfrom(65515) ##MAX SIZE OF PACKETS
+        data=socketInf.recvfrom(65535) ##MAX SIZE OF PACKETS
         packet=data[0]
         address= data[1] 
-        header=struct.unpack('!BBHHHBBHBBBBBBBB', packet[:20]) ##BY FIRST NUMBERS IN PACKET GETTING NAME OF PROTOCOL
+        header=struct.unpack('BBBBBBBBBBBBBBBBBBBB', packet[:20]) ##BY FIRST NUMBERS IN PACKET GETTING NAME OF PROTOCOL
         
         mutex.acquire() ##WHILE PRINTING AND DATA RECORDING IN FILE
 
         print('Packet Number: ', n, ' in thread ', threadNum)
-        if(header[6]==6): 
+        if(header[9]==6): 
             f.write("ID = " + str(n)  + ' in thread = ' + str(threadNum) + " TCP:\n   ")
             print("Protocol = TCP")
-        elif(header[6]==17):
+        elif(header[9]==17):
             f.write("ID = " + str(n) + ' in thread = ' + str(threadNum) + " UDP:\n    ")
             print("Protocol = UDP")
             f.write("ACII 8-bit:\n    " + str(dpkt.udp.UDP(packet)) + "\n    HEX:\n   ")
-        elif(header[6]==1):
+        elif(header[9]==1):
             f.write("ID = " + str(n)  + ' in thread = ' + str(threadNum) + " ICMP:\n   ")
             print("Protocol = ICMP")
         print(address)
